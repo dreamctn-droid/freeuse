@@ -1,236 +1,134 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>純前端 PDF 轉圖片工具 | 免上傳・高清・100% 瀏覽器本機轉檔</title>
-    <meta name="description" content="全網最安全快速的純前端 PDF 轉圖片工具。100% 本機瀏覽器渲染，檔案不上傳伺服器，零隱私風險。支援 PNG、JPG、WebP 格式與 4K 超高清解析度，提供單頁下載與一鍵打包 ZIP 功能。">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    
-    <!-- PDF.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <!-- JSZip CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF 轉 JPG 並上傳至 GitHub - 高品質圖檔轉換器</title>
+  <meta name="description" content="輕鬆將 PDF 檔案轉換為高品質 JPG 圖片，並支援一鍵打包下載與直接上傳至 GitHub 儲存庫。">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- JSZip CDN for batch zip download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-background">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-        <div class="grid-overlay"></div>
-    </div>
+  <div class="container">
+    <header>
+      <h1>📄 PDF 轉 JPG 與 GitHub 上傳神器</h1>
+      <p>極速在高解析度下將 PDF 頁面轉成 JPG 圖片，並快速同步備份上傳至 GitHub 儲存庫</p>
+    </header>
 
-    <div class="app-container">
-        <!-- Header -->
-        <header class="navbar">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    <i class="fa-solid fa-arrow-right-long arrow-icon"></i>
-                    <i class="fa-regular fa-image"></i>
-                </div>
-                <div class="logo-text">
-                    <span class="brand-name">PDF2IMG <span class="badge-pro">PURE</span></span>
-                    <span class="brand-sub">純前端免上傳轉檔器</span>
-                </div>
-            </div>
-            
-            <div class="header-badges">
-                <div class="security-badge">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span>100% 本機運算・零伺服器負擔</span>
-                </div>
-                <a href="https://github.com" target="_blank" class="github-link" id="github-repo-link" title="檢視 GitHub 原始碼">
-                    <i class="fa-brands fa-github"></i>
-                    <span>GitHub</span>
-                </a>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <h1 class="hero-title">
-                    極速 PDF 轉圖片 <span class="gradient-text">本機完全隱私轉檔</span>
-                </h1>
-                <p class="hero-subtitle">
-                    無需上傳至雲端伺服器！直接在您的瀏覽器內繪製與轉換，檔案 0 外洩風險、速度無限制。
-                </p>
-            </section>
-
-            <!-- Upload Area -->
-            <section class="upload-section">
-                <div class="drop-zone" id="drop-zone">
-                    <input type="file" id="file-input" accept="application/pdf" class="file-input-hidden">
-                    <div class="drop-zone-content">
-                        <div class="upload-icon-wrapper">
-                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                        </div>
-                        <h3>拖曳 PDF 檔案至此，或 <span class="browse-btn">點擊選擇檔案</span></h3>
-                        <p class="file-hint">支援所有標準 PDF 文件・檔案大小無限制</p>
-                        <div class="feature-pills">
-                            <span><i class="fa-solid fa-bolt"></i> 毫秒級轉檔</span>
-                            <span><i class="fa-solid fa-lock"></i> 免上傳隱私安全</span>
-                            <span><i class="fa-solid fa-expand"></i> 支援 4K 超高畫質</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Control & Settings Panel (Hidden by default until file loaded) -->
-            <section class="controls-section hidden" id="controls-section">
-                <div class="file-info-bar">
-                    <div class="file-details">
-                        <i class="fa-solid fa-file-pdf pdf-file-icon"></i>
-                        <div>
-                            <h4 id="file-name">document.pdf</h4>
-                            <span id="file-meta">頁數：-- 頁 | 大小：-- MB</span>
-                        </div>
-                    </div>
-                    <div class="file-actions">
-                        <button class="btn btn-secondary" id="reupload-btn">
-                            <i class="fa-solid fa-arrow-rotate-left"></i> 重新選擇
-                        </button>
-                    </div>
-                </div>
-
-                <div class="settings-grid">
-                    <!-- Format Selector -->
-                    <div class="setting-card">
-                        <label><i class="fa-solid fa-file-image"></i> 輸出圖片格式</label>
-                        <div class="radio-group" id="format-group">
-                            <label class="radio-chip active">
-                                <input type="radio" name="format" value="png" checked>
-                                <span>PNG (無損高清)</span>
-                            </label>
-                            <label class="radio-chip">
-                                <input type="radio" name="format" value="jpeg">
-                                <span>JPEG (高相容性)</span>
-                            </label>
-                            <label class="radio-chip">
-                                <input type="radio" name="format" value="webp">
-                                <span>WebP (體積小)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Resolution Multiplier -->
-                    <div class="setting-card">
-                        <label><i class="fa-solid fa-up-right-and-down-left-from-center"></i> 解析度畫質 (Scale)</label>
-                        <div class="radio-group" id="scale-group">
-                            <label class="radio-chip">
-                                <input type="radio" name="scale" value="1">
-                                <span>1x (標準 72DPI)</span>
-                            </label>
-                            <label class="radio-chip active">
-                                <input type="radio" name="scale" value="2" checked>
-                                <span>2x (高清 144DPI)</span>
-                            </label>
-                            <label class="radio-chip">
-                                <input type="radio" name="scale" value="3">
-                                <span>3x (超高清 216DPI)</span>
-                            </label>
-                            <label class="radio-chip">
-                                <input type="radio" name="scale" value="4">
-                                <span>4x (4K 印刷級)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Quality Slider (Visible for JPEG / WEBP) -->
-                    <div class="setting-card" id="quality-card">
-                        <div class="slider-header">
-                            <label><i class="fa-solid fa-sliders"></i> 壓縮品質 (Quality)</label>
-                            <span id="quality-value">90%</span>
-                        </div>
-                        <input type="range" id="quality-range" min="30" max="100" value="90" class="range-slider">
-                    </div>
-                </div>
-
-                <!-- Action Toolbar -->
-                <div class="action-toolbar">
-                    <button class="btn btn-primary btn-large" id="start-convert-btn">
-                        <i class="fa-solid fa-play"></i> 開始渲染圖片
-                    </button>
-                    <button class="btn btn-success btn-large hidden" id="download-zip-btn">
-                        <i class="fa-solid fa-file-zipper"></i> 一鍵下載全頁 ZIP 包
-                    </button>
-                </div>
-            </section>
-
-            <!-- Render Status & Progress -->
-            <section class="progress-section hidden" id="progress-section">
-                <div class="progress-info">
-                    <span id="progress-status-text">正在繪製 PDF 頁面中...</span>
-                    <span id="progress-percent">0%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
-                </div>
-            </section>
-
-            <!-- Preview Grid -->
-            <section class="preview-section hidden" id="preview-section">
-                <div class="section-header">
-                    <h3><i class="fa-solid fa-border-all"></i> 圖片預覽與下載區</h3>
-                    <span class="count-badge" id="rendered-count-badge">已生成 0 頁</span>
-                </div>
-
-                <div class="preview-grid" id="preview-grid">
-                    <!-- Page Cards will be injected dynamically -->
-                </div>
-            </section>
-
-            <!-- Key Advantages Section -->
-            <section class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-shield-cat"></i></div>
-                    <h3>絕對隱私安全</h3>
-                    <p>所有數據 100% 在您的電腦瀏覽器記憶體中運算，絕不上傳至任何伺服器或第三方網站。</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-microchip"></i></div>
-                    <h3>零伺服器負擔</h3>
-                    <p>託管於 GitHub Pages / Cloudflare Pages 完全免費，無需付費主機或流量費用，永不被封鎖。</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                    <h3>靈活畫質控制</h3>
-                    <p>支援最高 4K (288 DPI) 超高解析度輸出，自由選擇 PNG / JPG / WebP 及品質壓縮。</p>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>© 2026 PDF2IMG PURE — 純前端高效 PDF 轉圖片工具 | 適合託管於 GitHub Pages / Cloudflare Pages</p>
-        </footer>
-    </div>
-
-    <!-- Image Modal for Full Preview -->
-    <div class="modal hidden" id="image-modal">
-        <div class="modal-backdrop" id="modal-backdrop"></div>
-        <div class="modal-content">
-            <button class="modal-close" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
-            <img id="modal-img" src="" alt="Full Preview">
-            <div class="modal-actions">
-                <a id="modal-download-btn" class="btn btn-primary" download><i class="fa-solid fa-download"></i> 下載此張圖片</a>
-            </div>
+    <main class="app-grid">
+      <!-- Left Column: PDF Converter -->
+      <section class="card" id="converterCard">
+        <h2 class="card-title"><span class="icon">🖼️</span> 第一步：選擇與轉換 PDF</h2>
+        
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="pdfFileInput" accept=".pdf,application/pdf">
+          <div class="dropzone-icon">📥</div>
+          <div class="dropzone-text" id="dropzoneText">拖曳 PDF 檔案至此處，或點擊瀏覽選取</div>
+          <div class="dropzone-sub">支援單頁與多頁 PDF 文件</div>
         </div>
-    </div>
 
-    <script src="js/app.js"></script>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="qualitySelect">圖檔解析度 (DPI)</label>
+            <select id="qualitySelect" class="form-control">
+              <option value="1.5">標準 (150 DPI - 較小檔案)</option>
+              <option value="2.0" selected>高清 (200 DPI - 推薦)</option>
+              <option value="3.0">超高清 (300 DPI - 印刷級)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pageRangeInput">轉換頁數 (選填)</label>
+            <input type="text" id="pageRangeInput" class="form-control" placeholder="例如: 1-5, 8 (留空轉全部)">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <button id="convertBtn" class="btn btn-primary" disabled>
+            <span>⚡ 開始轉換為 JPG</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Column: GitHub Settings -->
+      <section class="card" id="githubCard">
+        <h2 class="card-title"><span class="icon">🐙</span> 第二步：GitHub 上傳設定</h2>
+        
+        <div class="form-group">
+          <label class="form-label" for="ghRepoInput">GitHub 儲存庫 (Owner/Repo)</label>
+          <input type="text" id="ghRepoInput" class="form-control" placeholder="例如: dreamctn-droid/freeuse" value="dreamctn-droid/freeuse">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="ghBranchInput">目標分支 (Branch)</label>
+            <input type="text" id="ghBranchInput" class="form-control" value="main" placeholder="main">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ghFolderInput">儲存路徑 (Folder)</label>
+            <input type="text" id="ghFolderInput" class="form-control" value="images" placeholder="images">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="ghTokenInput">Personal Access Token (PAT)</label>
+          <input type="password" id="ghTokenInput" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="ghCommitMsgInput">提交訊息 (Commit Message)</label>
+          <input type="text" id="ghCommitMsgInput" class="form-control" placeholder="Upload converted JPG images from PDF">
+        </div>
+
+        <div class="form-group">
+          <button id="uploadGithubBtn" class="btn btn-success" disabled>
+            <span>🚀 一鍵上傳 JPG 到 GitHub</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Status & Logs Section -->
+    <section class="card" style="margin-top: 2rem;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>📊</span> 執行進度與狀態日誌
+      </h3>
+      
+      <div id="progressContainer" class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="logBox" class="log-box">
+        <div class="log-entry info">[系統就緒] 請在上方選擇 PDF 檔案以開始轉換...</div>
+      </div>
+    </section>
+
+    <!-- Preview & Action Section -->
+    <section id="previewSection" style="display: none;">
+      <div class="preview-header">
+        <h2>🖼️ JPG 圖片預覽</h2>
+        <div>
+          <button id="downloadAllBtn" class="btn btn-primary btn-sm" disabled style="width: auto; padding: 0.6rem 1.2rem;">
+            📦 下載全部 JPG (ZIP)
+          </button>
+        </div>
+      </div>
+
+      <div id="previewGrid" class="preview-grid">
+        <!-- Rendered preview cards will appear here -->
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
